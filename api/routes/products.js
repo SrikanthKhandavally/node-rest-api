@@ -2,6 +2,18 @@ const express = require('express');
 var router = express.Router();
 var Product = require('../models/product')
 var mongoose = require('mongoose');
+var multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, callBack){
+        callBack(null, './uploads/');
+    },
+    filename: function(req, file, callBack){
+        callBack(null, file.originalname);
+    }
+});
+
+var upload = multer({storage: storage});
 
 router.get('/', (req, res, next) => {
     Product.find().exec().then(docs => {
@@ -11,7 +23,7 @@ router.get('/', (req, res, next) => {
     }).catch(err =>{console.log(err)});
 });
 
-router.post('/', (req, res, next) => {
+router.post('/',upload.single('productImage'), (req, res, next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,

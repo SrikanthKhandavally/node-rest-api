@@ -4,7 +4,9 @@ const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const userRoutes = require('./api/routes/users')
 
+mongoose.connect("mongodb+srv://srikanth:Sitaram0116@node-rest-rmfns.mongodb.net/test?retryWrites=true");
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use((req, res, next) => {
@@ -22,6 +24,6 @@ app.use((req, res, next) => {
 
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/user', userRoutes);
 
-mongoose.connect("mongodb+srv://srikanth:Sitaram0116@node-rest-rmfns.mongodb.net/test?retryWrites=true");
 module.exports = app;

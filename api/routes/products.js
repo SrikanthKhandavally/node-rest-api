@@ -4,14 +4,17 @@ var Product = require('../models/product');
 var mongoose = require('mongoose');
 var multer = require('multer');
 
-// const storage = multer.diskStorage({
-//     destination: function(req, file, callBack){
-//         callBack(null, './uploads/');
-//     },
-//     filename: function(req, file, callBack){
-//         callBack(null, file.originalname);
-//     }
-// });
+
+const storage = multer.diskStorage({
+    destination: function(req, file, callBack){
+        callBack(null, './uploads/');
+    },
+    filename: function(req, file, callBack){
+        callBack(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage});
 
 // const fileFilter = (req, file, callBack) => {
 //     if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
@@ -20,16 +23,15 @@ var multer = require('multer');
 //         callBack(new Error('This is the error message'), false)
 //     }
 // }
-// var upload = multer({
-//     storage: storage,
-//     fileFilter: fileFilter,
-// });
+
 
 
 
 
 router.get('/', (req, res, next) => {
-    Product.find().exec().then(docs => {
+    Product.find()
+    .select("_id name price productImage shippingAddress").exec().then(docs => {
+        console.log(docs.productImage)
         res.status(200).json({
             result: docs
         });
@@ -37,13 +39,14 @@ router.get('/', (req, res, next) => {
 });
 
 
-router.post('/', (req, res, next) => {
-    const product = new Product({
+router.post('/', upload.single('productImage'), (req, res, next) => {
+    console.log(req.body.name)
+        const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
-    });
-    
+        price: req.body.price,
+        productImage: req.file.path
+    });    
     product.save()
     .then(result => {
         console.log("Hey " + req.body.name + "     " + req.body.price);
@@ -53,7 +56,6 @@ router.post('/', (req, res, next) => {
         });
     })
     .catch(err => console.log(err))
-
 });
 
 router.get('/:productId', (req, res, next) => {
@@ -64,7 +66,6 @@ router.get('/:productId', (req, res, next) => {
             result
         })
     }).catch(err => console.log(err))
-
 });
 
 router.patch('/:productId', (req, res, next) => {

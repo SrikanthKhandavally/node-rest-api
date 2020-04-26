@@ -1,7 +1,7 @@
 const express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-const User = require('../models/UserSignUp');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 
@@ -19,6 +19,7 @@ router.post('/signup', (req, res, next) => {
                         err: err
                     });
                 } else {
+                    console.log(req.body.firstName)
                     const user = new User({
                         _id: new mongoose.Types.ObjectId(),
                         firstName: req.body.firstName,
@@ -57,9 +58,12 @@ router.post('/login', (req, res, next) => {
                     message: 'Auth Successfull'
                 });
             }
-            res.status(401).json({
-                message: 'Auth failed'
-            });
+            else{
+                res.status(401).json({
+                    message: 'Auth failed'
+                });
+            }
+
         });
     }).catch( err => console.log(err))
 });
